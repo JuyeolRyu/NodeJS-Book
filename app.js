@@ -3,21 +3,23 @@ const cookieParser = require('cookie-parser');
 const morgan = require('morgan');
 const path = require('path');
 const session = require('express-session');
-const nunjucks = require('nunjucks');
+const flash = require('connect-flash');
+const passport = require('passport');
 const dotenv = require('dotenv');
 
 dotenv.config();
 const pageRouter = require('./routes/page');
+const { sequelize } = require('./models');
 const authRouter = require('./routes/auth');
-const {sequelize} = require('./models');
+const passportConfig = require('./passport');
 
 const app = express();
+sequelize.sync();
+passportConfig(passport);
 app.set('port', process.env.PORT || 8001);
-app.set('view engine', 'html');
-nunjucks.configure('views', {
-  express: app,
-  watch: true,
-});
+app.set('views',path.join(__dirname,'views'));
+app.set('view engine', 'pug');
+
 
 app.use(morgan('dev'));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -33,13 +35,11 @@ app.use(session({
     secure: false,
   },
 }));
-sequelize.sync({force:false})
-.then(()=>{
-  console.log('데이터베이스 연결 성공');
-})
-.catch((err)=>{
-  console.error(err);
-})
+app.use(flash());
+//요청(req)에 passport 설정 심는다
+app.use(passport.initialize());
+app.use(passport.session());
+
 
 app.use('/', pageRouter);
 app.use('/auth', authRouter);

@@ -1,12 +1,11 @@
-const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const bcrypt = require('bcrypt');
 
-const User = require('../models/user');
+const {User} = require('../models');
 
 //로그인 성공, 비밀번호 틀릴경우, 가입안된 경우 판단
 //done 실행되는 순간 auth.js에서  authError부분 실행된다
-module.exports = () => {
+module.exports = (passport) => {
   passport.use(new LocalStrategy({
     usernameField: 'email',
     passwordField: 'password',
