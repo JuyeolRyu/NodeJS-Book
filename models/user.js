@@ -1,6 +1,6 @@
-module.exports = (sequelize,DataTypes)=>(
-    sequelize.define('user',{
-        email : {
+module.exports = (sequelize, DataTypes) => (
+    sequelize.define('user', {
+        email: {
             type: DataTypes.STRING(40),
             allowNull: true,
             unique: true,
@@ -9,37 +9,23 @@ module.exports = (sequelize,DataTypes)=>(
             type: DataTypes.STRING(15),
             allowNull: false,
         },
-        password:{
-            type:DataTypes.STRING(100),
-            allowNull:true,
+        password: {
+            type: DataTypes.STRING(100),
+            allowNull: true,
         },
-        provider:{//sns 로그인했을경우 provider,snsID저장
-            type:DataTypes.STRING(10),
-            allowNull:true,
-            defaultValue: 'local',
+        // SNS 로그인을 하였을 경우에는 provider와 snsId를 저장합니다.
+        provider: {
+            type: DataTypes.STRING(10),
+            allowNull: false,
+            defaultValue:'local',
         },
-        snsId:{
-            type:DataTypes.STRING(30),
-            allowNull:true,
-        }
-    },{
-        timestamps:true,
-        paranoid:true,
-    })    
-)
-
-/*
-    static associate(db){
-        db.User.hasMany(db.Post);
-        db.User.belongsToMany(db.User,{
-            foreignKey: 'followingId',
-            as: 'Followers',
-            through:'Follow',
-        });
-        db.User.belongsToMany(db.User,{
-            foreignKey:'followerId',
-            as:'Followings',
-            through:'Follow',
-        });
-    }
-*/
+        snsId: {
+            type: DataTypes.STRING(30),
+            allowNull: true,
+        },
+    }, {
+        timestamps: true,
+        paranoid: true,     // timestamps와 paranoid가 true이므로 
+                            // createdAt, updatedAt, deletedAt 컬럼도 생성됨
+    })
+);
