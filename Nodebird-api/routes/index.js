@@ -1,24 +1,23 @@
 const express = require('express');
-const uuidv4 = require('uuid/v4');
+const {v4:uuidv4} = require('uuid');
 const {User, Domain} = require('../models');
 
 const router = express.Router();
 
-router.get('/', (req,res,next)=>{
-    User.findOne({
-        where:{id:req.user && req.user.id},
-        include: {model: Domain},
-    })
-    .then((user)=>{
-        res.render('login',{
-            user,
-            loginError: req.flash('loginError'),
-            domains: user && user.domains,
+router.get('/', async(req,res,next)=>{
+    try {
+        const user = await User.findOne({
+          where: { id: req.user && req.user.id || null },
+          include: { model: Domain },
         });
-    })
-    .catch((error)=>{
-        next(error);
-    });
+        res.render('login', {
+          user,
+          domains: user && user.Domains,
+        });
+    }catch (err) {
+        console.error(err);
+        next(err);
+    }
 });
 
 router.post('/domain',(req,res,next)=>{
