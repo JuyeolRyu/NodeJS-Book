@@ -8,7 +8,7 @@ block content
     #chat-list
       if chats !== null
         for chat in chats
-            //-채팅 user의 종류 = user, system, other
+          //-채팅 user의 종류 = user, system, other
           if chat.user === user               
             .mine(style='color:' + chat.user)     
               div= chat.user
@@ -78,20 +78,20 @@ block content
     });
     /* 채팅을 전송하는 폼에 submit 이벤트 리스너를 추가합니다. */
     document.querySelector('#chat-form').addEventListener('submit', function (e) {  // submit 이벤트 리스너
-        e.preventDefault();
-        if (e.target.chat.value) {
-          var xhr = new XMLHttpRequest();
-          xhr.onload = function () {
-            if (xhr.status === 200) {
-              e.target.chat.value = '';
-            } else {
-              console.error(xhr.responseText);
-            }
-          };
-          xhr.open('POST','/room/#{room._id}/chat');  // routes - index.js 로 보냄
-          xhr.setRequestHeader('Content-Type','application/json');
-          xhr.send(JSON.stringify({ chat: this.chat.value }));
-        }
+      e.preventDefault();
+      if (e.target.chat.value) {
+        var xhr = new XMLHttpRequest();
+        xhr.onload = function () {
+          if (xhr.status === 200) {
+            e.target.chat.value = '';
+          } else {
+            console.error(xhr.responseText);
+          }
+        };
+        xhr.open('POST','/room/#{room._id}/chat');  // routes - index.js 로 보냄
+        xhr.setRequestHeader('Content-Type','application/json');
+        xhr.send(JSON.stringify({ chat: this.chat.value }));
+      }
     });
     /* 프런트 화면에 이미지를 선택했을 때 업로드 하는 이벤트 리스너를 추가합니다.*/
     document.querySelector('#gif').addEventListener('change', function (e) {
