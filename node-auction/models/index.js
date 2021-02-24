@@ -9,9 +9,9 @@ const sequelize = new Sequelize(
 );
 
 db.sequelize = sequelize;
-db.Sequelize = Sequeluze;
+db.Sequelize = Sequelize;
 db.User = require('./user')(sequelize,Sequelize);
-db.Good = require('./good')(sequelzie,Sequelize);
+db.Good = require('./good')(sequelize,Sequelize);
 db.Auction = require('./auction')(sequelize,Sequelize);
 
 //상품과 판매자,구매자 사이의 관계 정의 

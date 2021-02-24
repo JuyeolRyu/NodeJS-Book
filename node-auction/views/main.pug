@@ -1,0 +1,54 @@
+extends layout
+
+block content
+  .timeline
+    h2 경매 진행 목록
+    table#good-list
+      tr
+        th 상품명
+        th 이미지
+        th 시작 가격
+        th 종료 시간
+        th 입장
+      for good in goods
+        tr
+          td= good.name
+          td: img(src='/img/' + good.img)
+          td= good.price
+          td.time(data-start=good.createdAt) 00:00:00
+          td: a.enter.btn(href='/good/' + good.id) 입장
+  script(src='https://cdnjs.cloudflare.com/ajax/libs/event-source-polyfill/0.0.9/eventsource.min.js')
+
+  //- script.
+  //-   var es = new EventSource('/sse');
+  //-   es.onmessage = function (e) {
+  //-    document.querySelectorAll('.time').forEach(function(td) {
+  //-       var end = new Date(td.dataset.start);
+  //-       var server = new Date(parseInt(e.data, 10));
+  //-       end.setDate(end.getDate() + 1);
+
+  //-       if (server >= end) {
+  //-         return td.textContent = '00:00:00';
+  //-       } else {
+  //-         var t = end - server;
+  //-         var seconds = ('0' + Math.floor((t / 1000) % 60)).slice(-2);
+  //-         var minutes = ('0' + Math.floor((t / 1000 / 60) % 60)).slice(-2);
+  //-         var hours = ('0' + Math.floor((t / (1000 * 60 * 60)) % 24)).slice(-2);
+  //-         return td.textContent = hours + ':' + minutes + ':' + seconds ;
+  //-       }
+  //-     });
+  //-   };
+
+    /* SSE는 EventSource객체를 지원하지 않아서 크롬에서만 사용가능 합니다.
+    그러나, 다행히 EventSource를 사용자가 직접 구현할 수 있습니다. */
+
+    /* 첫 번째 스크립트가 EventSource Polyfill 입니다. 
+    이것을 넣어주면 IE와 엣지 브라우저에서도 SSE를 사용할 수 있습니다. */
+
+    /* 두 번째 스크립트는 EventSource를 사용해서 SSE를 받는 코드입니다. 
+    new EventSource('/sse')로 서버와 연결하고,
+    es.onmessage 또는 es.addEventListener('message')이벤트 리스너로 서버로부터 데이터를 받을 수 있습니다. 
+    서버로부터 받은 데이터는 e.data에 들어 있습니다. 
+    
+    아랫부분은 서버 시간과 경매 종료 시간을 계산해 카운트다운을 하는 코드입니다. 
+    24시간동안 카운트다운 되도록 하였습니다. */
