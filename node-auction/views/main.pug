@@ -19,25 +19,25 @@ block content
           td: a.enter.btn(href='/good/' + good.id) 입장
   script(src='https://cdnjs.cloudflare.com/ajax/libs/event-source-polyfill/0.0.9/eventsource.min.js')
 
-  //- script.
-  //-   var es = new EventSource('/sse');
-  //-   es.onmessage = function (e) {
-  //-    document.querySelectorAll('.time').forEach(function(td) {
-  //-       var end = new Date(td.dataset.start);
-  //-       var server = new Date(parseInt(e.data, 10));
-  //-       end.setDate(end.getDate() + 1);
+  script.
+    var es = new EventSource('/sse');
+    es.onmessage = function (e) {
+     document.querySelectorAll('.time').forEach(function(td) {
+        var end = new Date(td.dataset.start);
+        var server = new Date(parseInt(e.data, 10));
+        end.setDate(end.getDate() + 1);
 
-  //-       if (server >= end) {
-  //-         return td.textContent = '00:00:00';
-  //-       } else {
-  //-         var t = end - server;
-  //-         var seconds = ('0' + Math.floor((t / 1000) % 60)).slice(-2);
-  //-         var minutes = ('0' + Math.floor((t / 1000 / 60) % 60)).slice(-2);
-  //-         var hours = ('0' + Math.floor((t / (1000 * 60 * 60)) % 24)).slice(-2);
-  //-         return td.textContent = hours + ':' + minutes + ':' + seconds ;
-  //-       }
-  //-     });
-  //-   };
+        if (server >= end) {
+          return td.textContent = '00:00:00';
+        } else {
+          var t = end - server;
+          var seconds = ('0' + Math.floor((t / 1000) % 60)).slice(-2);
+          var minutes = ('0' + Math.floor((t / 1000 / 60) % 60)).slice(-2);
+          var hours = ('0' + Math.floor((t / (1000 * 60 * 60)) % 24)).slice(-2);
+          return td.textContent = hours + ':' + minutes + ':' + seconds ;
+        }
+      });
+    };
 
     /* SSE는 EventSource객체를 지원하지 않아서 크롬에서만 사용가능 합니다.
     그러나, 다행히 EventSource를 사용자가 직접 구현할 수 있습니다. */

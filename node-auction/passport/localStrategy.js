@@ -22,7 +22,7 @@ module.exports = (passport)=>{
                     done(null,exUser);
                 //비밀번호가 틀렸을 경우
                 }else{
-                    done(null, false, {message:'비밀번호가 일치라지 않습니다.'});
+                    done(null, false, {message:'비밀번호가 일치하지 않습니다.'});
                 }
             //가입되지 않았을 경우
             }else{

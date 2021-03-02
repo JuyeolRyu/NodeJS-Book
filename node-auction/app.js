@@ -14,13 +14,16 @@ const authRouter = require('./routes/auth');
 //db와 passport 불러오기
 const {sequelize} = require('./models');
 const passportConfig = require('./passport');
+const sse = require('./sse');
+const websocket = require('./socket');
+const checkAuction = require('./checkAuction');
 
 const app = express();
 //sequelize가 초기화 될 때 db에 필요한 테이블을 생성한다.
 sequelize.sync();
 //로그인을 위한 passport 가져옴
 passportConfig(passport);
-
+checkAuction();
 //세션 설정
 const sessionMiddleware = session({
     resave:false,
@@ -63,6 +66,8 @@ app.use((err,req,res,next)=>{
     res.render('error');
 });
 
-app.listen(app.get('port'), ()=>{
+const server = app.listen(app.get('port'), ()=>{
     console.log(app.get('port'),'번 포트에서 대기 중');
 });
+websocket(server,app);
+sse(server);
