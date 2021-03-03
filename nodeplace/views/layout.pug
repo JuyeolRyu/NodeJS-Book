@@ -1,0 +1,95 @@
+doctype
+html
+  head
+    title= title || '장소 검색 서비스'
+    link(rel='stylesheet' href='/main.css')
+  body
+    form#search-form(method='get')
+      span 장소 검색 서비스
+      input#search
+      select#type
+        option(value='') 없음
+        option(value='cafe') 카페
+        option(value='store') 상점
+        option(value='bank') 은행
+        option(value='school') 학교
+      button#search-btn.btn(type='submit') 검색
+      button#loc-search-btn.btn(type='button') 주변검색
+      ul#search-list
+
+    block content
+    script.
+      var timer;
+      /* 검색창에서 입력하다가 키 떼면(keyup) 검색어 자동완성되는 이벤트 */
+      document.querySelector('#search').addEventListener('keyup', function (e) {
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState === xhr.DONE) {
+            if (xhr.status === 200) {
+              var predictions = JSON.parse(xhr.responseText);   // 결과로 받은 예상 검색어들
+              var ul = document.querySelector('#search-list');
+              ul.innerHTML = '';
+              predictions.forEach(function (pred) {
+                var li = document.createElement('li');
+                li.textContent = pred.terms[0].value;
+                li.onclick = function () {
+                  location.href = '/search/' + pred.terms[0].value;
+                }
+                ul.appendChild(li);
+              });
+            } else {
+              console.error(xhr.responseText);
+            }
+          }
+        };
+        var query = this.value.trim();
+        if (timer) {
+          clearTimeout(timer);
+        }
+        timer = setTimeout(function () {
+          if (query) {
+            xhr.open('GET', '/autocomplete/' + query);
+            xhr.send();
+          }
+        }, 200);
+      });
+
+      /* 검색어 전송 폼 */
+      document.querySelector('#search-form').addEventListener('submit', function (e) {
+        e.preventDefault();
+        // 검색어를 입력하지 않았다면 폼 요청을 하지 않습니다.
+        if (!this.search.value || !this.search.value.trim()) {
+          this.search.focus();
+          return false;
+        }
+        // 검색어를 입력한 경우에는 폼 요청 주소(this.action)를 노드 라우터에 맞게 설정한 후, 폼 요청을 전송합니다.
+        this.action = '/search/' + this.search.value.trim();
+        return this.submit();
+      })
+
+      /* #loc-search-btn버튼 눌렀을 때, 내 위치를 찾아서 서버에 요청을 보내는 이벤트 */
+      document.querySelector('#loc-search-btn').addEventListener('click', function (e) {
+        e.preventDefault();
+        if (navigator.geolocation) { // GPS를 지원하면
+          navigator.geolocation.getCurrentPosition(function (position) {
+            var search = document.querySelector('#search');
+            var type = document.querySelector('#type').value;
+            if (!search.value || !search.value.trim()) {
+              search.focus();
+              return false;
+            }
+            var lat = position.coords.latitude;
+            var lng = position.coords.longitude;
+            location.href = '/search/' + search.value.trim()
+              + '?lat=' + lat + '&lng=' + lng + '&type=' + type;
+          }, function () {
+            alert('내 위치 확인 권한을 허용하세요.');
+          }, {
+            enableHighAccuracy: false,
+            maximumAge: 0,
+            timeout: Infinity
+          });
+        } else {
+          alert('GPS를 지원하지 않습니다');
+        }
+      });

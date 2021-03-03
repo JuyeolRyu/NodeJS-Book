@@ -31,4 +31,4 @@ module.exports = () => {
 
     require('./favorite');
     require('./history');
-}
+};

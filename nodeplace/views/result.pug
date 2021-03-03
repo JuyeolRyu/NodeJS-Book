@@ -1,0 +1,71 @@
+extends layout
+
+block content
+  h1= query + ' 검색 결과(' + results.length + ')'
+
+  #map
+ 
+  script.
+    var positions = [];
+
+  for result in results
+    script.
+      positions.push({
+        lat: #{result.geometry.location.lat},
+        lng: #{result.geometry.location.lng},
+        name: '#{result.name}',
+        id: '#{result.place_id}'
+      });
+
+  script.
+    function initMap() {
+      var center = positions[0] || { lat: 37.540705, lng: 126.956764 };
+      var map = new google.maps.Map(document.getElementById('map'), {   // google.maps.Map(태그, 옵션): 지도를 렌더링
+        zoom: 13,       // 지도의 확대 정도
+        center: center  // 지도의 중심좌표 
+      });
+
+      positions.forEach(function(pos) {
+        var marker = new google.maps.Marker({  
+          position: { lat: pos.lat, lng: pos.lng },
+          map: map,         // map: 마커를 표시할 지도 
+          title: pos.name   // title: 마커에 마우스를 올렸을 때 표시할 툴팁 메시지
+        });
+        var div = document.createElement('div');
+        var h1 = document.createElement('h1');
+        var button = document.createElement('button');
+        h1.textContent = pos.name;
+        button.classList.add('btn');
+        button.textContent = '즐겨찾기 추가';
+        button.onclick = function () {
+          var xhr = new XMLHttpRequest();
+          xhr.onload = function () {
+            if (xhr.status === 200) {
+              location.href = '/';
+            }
+          };
+          xhr.open('POST', '/location/' + pos.id + '/favorite');
+          xhr.setRequestHeader('Content-Type', 'application/json');
+          xhr.send(JSON.stringify({
+            name: pos.name,
+            lat: pos.lat,
+            lng: pos.lng
+          }));
+        };
+        div.appendChild(h1);
+        div.appendChild(button);
+        var infowindow = new google.maps.InfoWindow({   // google.maps.InfoWindow: 정보창을 띄우는 코드
+          content: div
+        });
+        /* 마커 누르면(click) 정보창(infoWindow)이 Map과 Marker 위에 뜨도록 ... */
+        marker.addListener('click', function () {   // addEventListener 하면 에러 
+          infowindow.open(map, marker);
+        });
+      });
+    }
+  script(
+    async
+    defer
+    src="https://maps.googleapis.com/maps/api/js"
+      + "?key=AIzaSyBS3hsneK8UhMknF7rvPtyEK5ACaB5fvKo&callback=initMap"
+  )
